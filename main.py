@@ -7,10 +7,10 @@ import create_visualization
 
 def main():
     # Example prompts for each LLM
-    flan_t5_prompt = "Explain the concept of gravity."
-    claude_haiku_prompt = "Write a haiku about the rainforest."
-    llama_3_8b_prompt = "Summarize the impact of climate change on polar bears."
-    mistral_7b_prompt = "Describe the process of photosynthesis."
+    flan_t5_prompt = "Generate a short summary of 'Never Shall I Forget' by Elie Wiesel: Never shall I forget that night, the first night in camp, that turned my life into one long night seven times sealed."
+    claude_haiku_prompt = "Generate a short summary of 'Never Shall I Forget' by Elie Wiesel: Never shall I forget that smoke."
+    llama_3_8b_prompt = "Generate a short summary of 'Never Shall I Forget' by Elie Wiesel: Never shall I forget the small faces of the children whose bodies I saw transformed into smoke under a silent sky."
+    mistral_7b_prompt = "Generate a short summary of 'Never Shall I Forget' by Elie Wiesel: Never shall I forget those flames that consumed my faith forever."
 
     # Call each LLM function with the example prompt
     flan_t5_response = get_flan_t5_response.get_flan_t5_response(flan_t5_prompt)
