@@ -7,13 +7,6 @@ df = pd.read_csv('summaries_with_scores.csv')
 
 # Extract the average scores for each model and metric
 average_scores = {
-    'google-flan-t5': {
-        'bertscore_precision': df['google-flan-t5_precision'].mean(),
-        'bertscore_recall': df['google-flan-t5_recall'].mean(),
-        'bertscore_f1': df['google-flan-t5_f1'].mean(),
-        'rouge1': df['google-flan-t5_rouge1'].mean(),
-        'rougeL': df['google-flan-t5_rougeL'].mean()
-    },
     'mistral-7b-instruct': {
         'bertscore_precision': df['mistral-7b-instruct_precision'].mean(),
         'bertscore_recall': df['mistral-7b-instruct_recall'].mean(),
