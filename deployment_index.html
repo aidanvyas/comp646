@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Poetry Prof</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- <link rel="stylesheet" href="templates/style.css"> -->
+</head>
+    <style>
+      body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+      }
+
+      .content-container {
+          display: flex;
+          flex-wrap: wrap; /* Ensure content can wrap if needed */
+      }
+
+      .poem-input {
+          flex: 1 1 40%; /* Adjust the flex-basis to 40% or your preference */
+          padding: 20px;
+          box-sizing: border-box;
+      }
+
+      .summaries-container {
+          flex: 1 1 60%; /* Adjust the remaining space for the summaries */
+          padding: 20px;
+          box-sizing: border-box;
+      }
+
+      #response, #line-summaries {
+          margin-bottom: 20px;
+      }
+
+      #user-input {
+          width: 100%; /* Use the full width of the poem-input container */
+          height: 300px; /* Increase the height to make the textbox larger */
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          resize: vertical; /* Allow vertical resizing */
+      }
+
+      button {
+          padding: 10px 20px;
+          background-color: #4CAF50;
+          color: #fff;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+      }
+
+      footer {
+          text-align: center;
+          padding: 20px;
+          background-color: #f1f1f1;
+          width: 100%; /* Ensure footer spans the width of the page */
+      }
+
+    </style>
+    <script>
+        $(document).ready(function() {
+            var currentConversationId = 'new';
+          $('#chat-form').submit(function(e) {
+              e.preventDefault();
+              var user_input = $('#user-input').val();
+              var conversation_id = currentConversationId;
+            // Clear the previous responses before displaying new ones
+            $('#response').empty();
+            $('#line-summaries').empty();
+              // Submit to general_summary endpoint
+              $.post('/general_summary', {user_input: user_input, conversation_id: conversation_id}, function(data) {
+                  $('#response').append('<p><strong>User:</strong> ' + user_input + '</p>');
+                  $('#response').append('<p><strong>General Summary:</strong> ' + data.response + '</p>');
+                  $('#user-input').val('');
+
+                  // After displaying the general summary, request and display the line-by-line summary
+                $.post('/line_by_line', {user_input: user_input, conversation_id: conversation_id}, function(lineData) {
+                    // Handle the line-by-line summary response
+                  // $('#line-summaries').append('<p><strong>User:</strong> ' + user_input + '</p>');
+                  $('#line-summaries').append('<p><strong>Line-by-line summary:</strong> ' + lineData.response + '</p>');
+                    // $('#line-summaries').find('h2').siblings().remove(); // Clear previous summaries
+                    // $('#line-summaries').append('<p>' + lineData.response + '</p>'); // Append new summary
+                  $('#user-input').val('');
+                    // Reset the conversation ID to allow for a new submission
+                    currentConversationId = 'new';
+                });
+                  currentConversationId = 'new';
+                 if (conversation_id === 'new') {
+                      currentConversationId = data.conversation_id;
+                      $('#conversations').append('<div class="conversation" data-id="' + data.conversation_id + '">' + user_input + '</div>');
+                  }
+              });
+          });
+
+
+            $('#conversations').on('click', '.conversation', function() {
+                var conversation_id = $(this).data('id');
+                currentConversationId = conversation_id;
+                $('#response').empty();
+
+                // Load conversation history from the server
+                $.get('/history', {conversation_id: conversation_id}, function(data) {
+                    // Display the conversation history in the response area
+                    data.history.forEach(function(message) {
+                        $('#response').append('<p><strong>' + message.role + ':</strong> ' + message.content + '</p>');
+                    });
+                });
+            });
+
+            $('#new-conversation').click(function() {
+                currentConversationId = 'new';
+                $('#response').empty();
+            });
+        });
+    </script>
+</head>
+  <body>
+      <div class="content-container">
+          <!-- Poem input area -->
+        <div class="poem-input">
+            <form id="chat-form">
+                <textarea id="user-input" name="user_input" placeholder="Enter your poem here" required></textarea>
+                <button type="submit">Submit Poem</button>
+            </form>
+        </div>
+
+
+          <!-- Summaries container -->
+          <div class="summaries-container">
+              <div id="response">General Summary</div>
+              <div id="line-summaries">Line-by-Line Summaries</div>
+          </div>
+      </div>
+      <footer></footer>
+  </body>
+
+</html>
